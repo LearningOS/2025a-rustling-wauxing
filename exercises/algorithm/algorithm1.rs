@@ -2,11 +2,10 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
-use std::vec::*;
 
 #[derive(Debug)]
 struct Node<T> {
@@ -56,11 +55,11 @@ impl<T> LinkedList<T> {
         self.length += 1;
     }
 
-    pub fn get(&mut self, index: i32) -> Option<&T> {
+    pub fn get(&self, index: i32) -> Option<&T> {
         self.get_ith_node(self.start, index)
     }
 
-    fn get_ith_node(&mut self, node: Option<NonNull<Node<T>>>, index: i32) -> Option<&T> {
+    fn get_ith_node(&self, node: Option<NonNull<Node<T>>>, index: i32) -> Option<&T> {
         match node {
             None => None,
             Some(next_ptr) => match index {
@@ -69,14 +68,36 @@ impl<T> LinkedList<T> {
             },
         }
     }
+}
+
+impl<T: std::cmp::PartialOrd + Clone> LinkedList<T> {
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
 		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+		let mut res = Self::new();
+        let mut ia : i32 = 0;
+        let mut ib : i32 = 0;
+        let la = list_a.length as i32;
+        let lb = list_b.length as i32;
+        while ia<la && ib<lb{
+            if list_a.get(ia).unwrap() < list_b.get(ib).unwrap(){
+                res.add(list_a.get(ia).unwrap().clone());
+                ia=ia+1;
+            }
+            else{
+                res.add(list_b.get(ib).unwrap().clone());
+                ib=ib+1;
+            }
         }
+        while ia < la{
+            res.add(list_a.get(ia).unwrap().clone());
+            ia=ia+1;
+        }
+        while ib < lb{
+            res.add(list_b.get(ib).unwrap().clone());
+            ib=ib+1;
+        }
+        res
 	}
 }
 
