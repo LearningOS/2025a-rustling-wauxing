@@ -1,8 +1,7 @@
 /*
-	heap
-	This question requires you to implement a binary heap function
+    heap
+    This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -37,7 +36,14 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.count += 1;
+        let mut idx = self.count;
+        while idx > 1 && (self.comparator)(&self.items[idx], &self.items[self.parent_idx(idx)]) {
+            let parent_idx = self.parent_idx(idx);
+            self.items.swap(idx, parent_idx);
+            idx = parent_idx;
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -57,8 +63,15 @@ where
     }
 
     fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+        let left = self.left_child_idx(idx);
+        let right = self.right_child_idx(idx);
+        if self.count <= right {
+            left
+        } else if (self.comparator)(&self.items[left], &self.items[right]) {
+            left
+        } else {
+            right
+        }
     }
 }
 
@@ -84,8 +97,30 @@ where
     type Item = T;
 
     fn next(&mut self) -> Option<T> {
-        //TODO
-		None
+        if self.count == 0 {
+            return None;
+        } else {
+            let top = std::mem::replace(&mut self.items[1], T::default());
+            self.count -= 1;
+            if self.count > 0 {
+                let last = self.items.pop().unwrap();
+                self.items[1] = last;
+            } else {
+                self.items.pop();
+                return Some(top);
+            }
+            let mut idx = 1;
+            while self.children_present(idx) {
+                let target = self.smallest_child_idx(idx);
+                if !(self.comparator)(&self.items[idx], &self.items[target]) {
+                    self.items.swap(idx, target);
+                    idx = target;
+                } else {
+                    return Some(top);
+                }
+            }
+            return Some(top);
+        }
     }
 }
 
